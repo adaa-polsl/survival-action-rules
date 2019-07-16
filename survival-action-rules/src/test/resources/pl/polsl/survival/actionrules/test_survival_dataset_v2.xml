@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<experiment>
+	<parameter_sets>
+		<parameter_set name="auto">
+			<param name="min_rule_covered">3</param>
+			<param name="target_survival_curve">better</param>
+		</parameter_set>
+	</parameter_sets>
+
+	<datasets>
+
+		<dataset>
+			<label>status</label>
+			<survival_time>time</survival_time>
+			<out_directory>./test-output1/</out_directory>
+
+			<stable_attributes>
+				<stable_attribute>b</stable_attribute>
+			</stable_attributes>
+
+			<training>
+				<train>
+					 <in_file>test_survival_dataset_v2.arff</in_file>
+				 </train>
+			</training>
+
+			<prediction>
+				<performance_file>performance.csv</performance_file>
+			</prediction>
+		</dataset>
+
+		<dataset>
+			<label>status</label>
+			<survival_time>time</survival_time>
+			<out_directory>./test-output2/</out_directory>
+
+		  <stable_attributes>
+				<stable_attribute>a</stable_attribute>
+				<stable_attribute>c</stable_attribute>
+			</stable_attributes>
+
+			<training>
+				<train>
+					 <in_file>test_survival_dataset_v2.arff</in_file>
+				 </train>
+			</training>
+
+			<prediction>
+				<performance_file>performance.csv</performance_file>
+			</prediction>
+		</dataset>
+
+	</datasets>
+</experiment>

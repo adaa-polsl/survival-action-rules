@@ -1,0 +1,1 @@
+In this directory, add JAR file with project adaa.analytics.rules. You can download it from this repository on GitHub - it is located in "releases": https://github.com/adaa-polsl/survival-action-rules/releases/tag/v0.1. 
