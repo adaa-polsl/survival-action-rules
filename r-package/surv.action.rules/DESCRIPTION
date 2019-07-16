@@ -1,0 +1,17 @@
+Package: surv.action.rules
+Type: Package
+Title: Generate reports with results of experiments for induction of survival action rules
+Version: 0.1.0
+Author: Joanna Henzel
+Maintainer: Joanna Henzel <joanna.henzel@protonmail.com>
+Description: Generate reports with results of experiments for induction of survival action rules.
+License: What license is it under?
+Encoding: UTF-8
+LazyData: true
+Imports:
+  dplyr,
+  DT,
+  farff,
+  ggplot2,
+  papeR,
+  reader

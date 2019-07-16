@@ -1,0 +1,127 @@
+---
+output:
+  html_document:
+    toc: true
+    toc_float: true
+params: 
+  param_dir: "./../../results/GBSG2/better-target-rule/"
+  dataset_dir: "./../../datasets/"
+  title: "Wyniki"
+---
+
+---
+title: `r params$title`
+---
+
+```{r include=FALSE}
+library(surv.action.rules)
+library(dplyr)
+library(ggplot2)
+library(DT)
+library(papeR)
+library(farff)
+library(readr)
+knitr::opts_chunk$set(
+	echo = FALSE,
+	message = FALSE,
+	warning = FALSE
+)
+```
+
+```{r}
+arff_file <- list.files(arff_file_dir, 
+                        full.names = TRUE, 
+                        pattern = paste0(basename(dataset_dir), ".arff"))
+result_file <- list.files(param_dir, pattern = "^result_*",
+                             full.names = TRUE)[1]
+estimator_file <- list.files(param_dir, pattern = "^estimator_*",
+                             full.names = TRUE)[1]
+rules_statistic_file <- list.files(param_dir, pattern = "^eachRuleStatistic_*",
+                             full.names = TRUE)[1]
+covering_file <- list.files(param_dir, pattern = "^coveredExamples_*",
+                            full.names = TRUE)[1]
+```
+
+## Evaluation indicators for a set of rules
+
+```{r echo = FALSE, results = "asis"}
+whole_set_stats <- get_whole_set_stats(result_file)
+knitr::kable(whole_set_stats, row.names = FALSE) %>% kableExtra::kable_styling()
+```
+
+## Dataset statistics
+
+### Numerical attributes
+
+```{r}
+data <- farff::readARFF(arff_file, show.info = FALSE)
+if (sapply(data, is.numeric) %>% any) {
+  summarise(data, type = "numeric") %>% 
+  DT::datatable(options = list(scrollX = TRUE), rownames = FALSE)
+} else {
+  cat("No numerical attributes.")
+}
+```
+
+### Nominal attributes
+
+```{r}
+data <- farff::readARFF(arff_file, show.info = FALSE)
+if (sapply(data, is.factor) %>% any) {
+  summarise(data, type = "factor") %>% 
+  DT::datatable(options = list(scrollX = TRUE), rownames = FALSE)
+} else {
+  cat("No nominal attributes.")
+}
+```
+
+## Rules 
+
+```{r results = "asis"}
+rules_text <- get_rules_text(result_file)
+rules <- get_rules(result_file)
+DT::datatable(rules, options = list(scrollX = TRUE), rownames = FALSE)
+```
+
+## Evaluation indicators for single rules
+
+```{r results = "asis"}
+rules_statistic <- readr::read_csv(rules_statistic_file)
+DT::datatable(rules_statistic, rownames = FALSE, options = list(scrollX = TRUE)) %>% 
+  DT::formatRound(columns = 5:7, digits = 6)
+```
+
+## Attributes' statistics for covered examples {.tabset .tabset-fade}
+
+```{r message=FALSE, warning=FALSE, include=FALSE}
+covering <- get_covering(covering_file, arff_file, rules)
+
+tabs <- NULL
+for(i in seq(1, length(covering) - 1, 2)) {
+  left <- covering[[i]]
+  right <- covering[[i+1]]
+  tabs <- c(tabs, knitr::knit_child("attributes_stat_table.Rmd")) 
+}
+
+```
+
+```{r echo=FALSE, results="asis"}
+cat(paste(tabs, collapse = '\n'))
+```
+
+## KM plots {.tabset .tabset-fade}
+
+```{r message=FALSE, warning=FALSE, include = FALSE}
+estimator <- readr::read_csv(estimator_file)
+estimator <- estimator[, -ncol(estimator)]
+plot <- plot_km_each_rule(estimator)
+km <- NULL
+for (j in seq(1, length(plot))) {
+  p <- plot[[j]]
+  km <- c(km, knitr::knit_child("km_plot.Rmd"))
+}
+```
+
+```{r echo=FALSE, results="asis"}
+cat(paste(km, collapse = '\n'))
+```

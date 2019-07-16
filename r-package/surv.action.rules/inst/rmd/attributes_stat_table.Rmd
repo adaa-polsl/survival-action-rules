@@ -1,0 +1,21 @@
+```{r}
+num <- which(seq(1, length(covering) - 1, 2) == i)
+```
+
+### `r paste0("r", num)`
+
+`r rules_text[[num]]`
+
+#### Left
+
+```{r result = "asis"}
+ DT::datatable(left, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+    DT::formatRound(columns = 2:9, digits = 3)
+```
+
+#### Right
+
+```{r result = "asis"}
+ DT::datatable(right, rownames = FALSE, options = list(scrollX = TRUE)) %>%
+    DT::formatRound(columns = 2:9, digits = 3)
+```
