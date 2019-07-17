@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<experiment>
+
+	<parameter_sets>
+		<parameter_set name="any-target-rule">
+			<param name="min_rule_covered">10</param>
+			<param name="target_survival_curve">any</param>
+		</parameter_set>
+	</parameter_sets>
+
+	<datasets>
+
+		<dataset>
+			<label>survival_status</label>
+			<survival_time>survival_time</survival_time>
+			<out_directory>../results/actg320/</out_directory>
+			<training>
+				<train>
+					 <in_file>actg320.arff</in_file>
+				 </train>
+			</training>
+		</dataset>
+
+		<dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/bmt-ch/</out_directory>
+      <training>
+        <train>
+           <in_file>bmt-ch.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/cancer/</out_directory>
+      <training>
+        <train>
+           <in_file>cancer.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+		<dataset>
+			<label>survival_status</label>
+			<survival_time>survival_time</survival_time>
+			<out_directory>../results/follic/</out_directory>
+			<training>
+				<train>
+					 <in_file>follic.arff</in_file>
+				 </train>
+			</training>
+		</dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/hd/</out_directory>
+      <training>
+        <train>
+           <in_file>hd.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/lung/</out_directory>
+      <training>
+        <train>
+           <in_file>lung.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/Melanoma/</out_directory>
+      <training>
+        <train>
+           <in_file>Melanoma.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/mgus/</out_directory>
+      <training>
+        <train>
+           <in_file>mgus.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/pbc/</out_directory>
+      <training>
+        <train>
+           <in_file>pbc.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/std/</out_directory>
+      <training>
+        <train>
+           <in_file>std.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/uis/</out_directory>
+      <training>
+        <train>
+           <in_file>uis.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/whas1/</out_directory>
+      <training>
+        <train>
+           <in_file>whas1.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/whas500/</out_directory>
+      <training>
+        <train>
+           <in_file>whas500.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/zinc/</out_directory>
+      <training>
+        <train>
+           <in_file>zinc.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+    <dataset>
+      <label>survival_status</label>
+      <survival_time>survival_time</survival_time>
+      <out_directory>../results/wcgs/</out_directory>
+      <training>
+        <train>
+           <in_file>wcgs.arff</in_file>
+         </train>
+      </training>
+    </dataset>
+
+	</datasets>
+</experiment>

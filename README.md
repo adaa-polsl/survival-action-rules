@@ -79,6 +79,7 @@ The user can define the following information here:
 * `stable_attributes` - a set of stable attributes,
 * `in_file` - path to the ARFF file with the dataset.
 
+You can find example XML config file in the `datasets` directory.
 ### Output data
 
 After the experiment, the results are saved in text files and CSV files. They are placed in a directory specified by the parameter `out_directory` in the configuration file. Subdirectories are created in this file, each for a different type of parameter configuration. The subdirectory names respond to the `parameter_set` tags in an XML file.
