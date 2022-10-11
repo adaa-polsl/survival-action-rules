@@ -43,6 +43,8 @@ public class ExperimentExecutor {
 
 	private final static String PARAM_MIN_RULE_COVERED = "min_rule_covered";
 	private final static String PARAM_TARGET_RULE_POSITION = "target_survival_curve";
+	private final static String PARAM_MAX_COMMON_EXAMPLES_PERCENTAGE = "max_common_examples_percentage";
+	private final static String PARAM_MAX_RULE_COVERING_PERCENTAGE = "max_rule_covering_percentage";
 
 	protected static class ParamSetWrapper {
 		String name;
@@ -97,15 +99,25 @@ public class ExperimentExecutor {
 
 		TargetRulePosition induceBetterSurvival;
 		int minRuleCovered;
+		float maxCommonExamplesPercentage;
+		float maxRuleCoveringPercentage;
 		for (int i=0; i < params.size(); i++) {
 			induceBetterSurvival = SurvivalActionRulesGenerator.DEFAULT_INDUCE_BETTER_SURVIVAL;
 			minRuleCovered = SurvivalActionRulesGenerator.DEFAULT_MIN_COVERED;
+			maxCommonExamplesPercentage = SurvivalActionRulesGenerator.DEFAULT_MAX_COMMON_EXAMPLES_PER;
+			maxRuleCoveringPercentage = SurvivalActionRulesGenerator.DEFAULT_MAX_RULE_COVERING_PERCENTAGE;
 			ParamSetWrapper parameterSet = params.get(i);
 			if (parameterSet.map.containsKey(PARAM_MIN_RULE_COVERED)) {
 				minRuleCovered = Integer.parseInt((String)parameterSet.map.get(PARAM_MIN_RULE_COVERED));
 			}
 			if (parameterSet.map.containsKey(PARAM_TARGET_RULE_POSITION)) {
 				induceBetterSurvival = readParamTargetSurvivalCurve(parameterSet);
+			}
+			if (parameterSet.map.containsKey(PARAM_MAX_COMMON_EXAMPLES_PERCENTAGE)) {
+				maxCommonExamplesPercentage = Float.parseFloat((String)parameterSet.map.get(PARAM_MAX_COMMON_EXAMPLES_PERCENTAGE));
+			}
+			if (parameterSet.map.containsKey(PARAM_MAX_RULE_COVERING_PERCENTAGE)) {
+				maxRuleCoveringPercentage = Float.parseFloat((String)parameterSet.map.get(PARAM_MAX_RULE_COVERING_PERCENTAGE));
 			}
 
 			for (int j = 0; j < datasets.size(); j++) {
@@ -124,7 +136,7 @@ public class ExperimentExecutor {
 					ExampleSet exampleSet = getExampleSet(configDir + arffFile, dataset.label, dataset.survivalTime);
 					ExampleSet uncoveredExampleSet = (ExampleSet)exampleSet.clone();
 					SurvivalActionRulesGenerator generator = SurvivalActionRulesGenerator.createSurvivalActionRulesGenerator(
-							exampleSet, uncoveredExampleSet, minRuleCovered, induceBetterSurvival, dataset.stableAttributes);
+							exampleSet, uncoveredExampleSet, minRuleCovered, induceBetterSurvival, maxCommonExamplesPercentage, maxRuleCoveringPercentage, dataset.stableAttributes);
 					rules = generator.induceSurvivalActionRuleList(); // genearte rules
 					Logger.log("Generated rules: " + rules + lineSeparator, Level.INFO);
 					writeResults(new ArrayList<SurvivalActionRule>(rules), exampleSet,
@@ -217,6 +229,7 @@ public class ExperimentExecutor {
 			.add(Double.toString(stat.getPValueLogRankLeftRightRules()))
 			.add(Double.toString(stat.getMedianSurvivalTimeLeftRule()))
 			.add(Double.toString(stat.getMedianSurvivalTimeRightRule()))
+			.add(Double.toString(stat.getPercentOfExamplesCoveredByLeftAndRightRules()))
 			.add(Double.toString(stat.getDifferenceMedianSurvivalTimeBetweenLeftRight()));
 			String statTextCombine = joiner.toString();
 			writer.println(statTextCombine);
@@ -276,6 +289,9 @@ public class ExperimentExecutor {
 		writer.println("\"Any\" actions count: " + statistic.getAggregatedNumberOfActionsTypeANY());
 		writer.println("Averege conditions per rule: " + statistic.getMeanNumberConditionsPerRule());
 		writer.println("Averege actions per rule: " + statistic.getMeanNumberOfActionsPerRule());
+		writer.println("Mean percent of examples covered by left and right rules: " + statistic.getMeanPercentOfExamplesCoveredByLeftAndRightRules());
+		writer.println("Mean percent of examples covered by left rule: " + statistic.getMeanPercentOfExamplesCoveredByLeftRule());
+		writer.println("Mean percent of examples covered by right rule: " + statistic.getMeanPercentOfExamplesCoveredByRightRule());
 		writer.println();
 		writer.println("Rules:");
 		// Write rules

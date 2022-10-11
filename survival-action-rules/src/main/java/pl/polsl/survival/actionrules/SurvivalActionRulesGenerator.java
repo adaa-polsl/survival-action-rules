@@ -35,17 +35,23 @@ import lombok.Setter;
 public class SurvivalActionRulesGenerator {
 	private int minRuleCovered;
 	private TargetRulePosition targetRulePosition; // Should rules be found to make survival curves better (or worse)?
+	private float maxCommonExamplesPercentage;
+	private float maxRuleCoveringPercentage;
 	private ExampleSet exampleSet;	
 	private ExampleSet uncoveredExampleSet;
 	private Set<String> stableAttributes; // Which attributes shouldn't be changed
 
 	protected static final int DEFAULT_MIN_COVERED = 2;
+	protected static final float DEFAULT_MAX_COMMON_EXAMPLES_PER = 0.1f; // the max percentage of common examples that a left and right rule can maximally share, in particular 0 - none and 1 - all
+	protected static final float DEFAULT_MAX_RULE_COVERING_PERCENTAGE = 0.5f;
 	protected static final Set<String> EMPTY_STABLE_ATTRIBUTES = Collections.emptySet();
 	protected static final TargetRulePosition DEFAULT_INDUCE_BETTER_SURVIVAL = TargetRulePosition.BETTER;
 
 	private SurvivalActionRulesGenerator(ExampleSet exampleSet) {
 		this.minRuleCovered = DEFAULT_MIN_COVERED;
 		this.targetRulePosition = DEFAULT_INDUCE_BETTER_SURVIVAL;
+		this.maxCommonExamplesPercentage = DEFAULT_MAX_COMMON_EXAMPLES_PER;
+		this.maxRuleCoveringPercentage = DEFAULT_MAX_RULE_COVERING_PERCENTAGE;
 		this.exampleSet = exampleSet;
 		this.uncoveredExampleSet = exampleSet;
 		this.stableAttributes = EMPTY_STABLE_ATTRIBUTES;
@@ -63,13 +69,15 @@ public class SurvivalActionRulesGenerator {
 			ExampleSet uncoveredExampleSet,
 			int minRuleCovered,
 			TargetRulePosition induceBetterSurvival,
+			float maxCommonExamplesPercentage,
+			float maxRuleCoveringPercentage,
 			Set<String> stableAttributes) {
 		checkExampleSet(exampleSet, minRuleCovered);
 		checkUncoveredExampleSet(uncoveredExampleSet, exampleSet, minRuleCovered);
 		checkStableAttributes(exampleSet, stableAttributes);
 
 		SurvivalActionRulesGenerator generator = new SurvivalActionRulesGenerator(
-				minRuleCovered, induceBetterSurvival, exampleSet, uncoveredExampleSet, stableAttributes);
+				minRuleCovered, induceBetterSurvival, maxCommonExamplesPercentage, maxRuleCoveringPercentage, exampleSet, uncoveredExampleSet, stableAttributes);
 		return generator;
 	}
 
@@ -88,6 +96,19 @@ public class SurvivalActionRulesGenerator {
 					" It can't be equal or bigger than number of examples in exampleSet.");
 		}
 		this.minRuleCovered = minRuleCovered;
+	}
+
+	public void setMaxCommonExamplesPercentage(float maxCommonExamplesPercentage) {
+		if (maxCommonExamplesPercentage > 1F & maxCommonExamplesPercentage < 0F) {
+			throw new IllegalArgumentException("Maximum percentage of common examples must be between 0 and 1.");
+		}
+		this.maxCommonExamplesPercentage = maxCommonExamplesPercentage;
+	}
+	public void setMaxRuleCoveringPercentage(float maxRuleCoveringPercentage) {
+		if (maxRuleCoveringPercentage > 1F & maxRuleCoveringPercentage < 0F) {
+			throw new IllegalArgumentException("Maximum rule coverage must be between 0 and 1.");
+		}
+		this.maxRuleCoveringPercentage = maxRuleCoveringPercentage;
 	}
 	public void setStableAttributes(Set<String> stableAttributes) {
 		checkStableAttributes(this.exampleSet, stableAttributes);
@@ -144,12 +165,16 @@ public class SurvivalActionRulesGenerator {
 			for (ConditionBase action: actionsInPremise) {
 				rule.getPremise().getSubconditions().remove(action);
 				double newLogRank = rule.getLogRankValueLeftRightRule(this.exampleSet);
+				float commonExamplesPercentage = rule.getCommonExamplesPercentage(this.exampleSet);
+				float ruleCoveringPercentage = rule.getRuleCoveringPercentage(this.exampleSet);
 				SurvivalActionRule shortenedRuleAfterRemoving = rule.reduceActionsThisSameAttribute();
 				int nbEmptyActionsAfterRemoving = calculateNbEmptyActions(shortenedRuleAfterRemoving);
 				
 				if (newLogRank >= currentLogRank &&
 						nbEmptyActionsAfterRemoving != shortenedRuleAfterRemoving.getPremise().getSubconditions().size() &&
-						isFulfilledTargetRulePosition(rule)) {
+						isFulfilledTargetRulePosition(rule) && 
+						ruleCoveringPercentage <= this.maxRuleCoveringPercentage &&
+						commonExamplesPercentage <= this.maxCommonExamplesPercentage) {
 					actionRemove = action;
 					currentLogRank = newLogRank;
 					loosenRightRule = false; //? should it be here?
@@ -163,11 +188,15 @@ public class SurvivalActionRulesGenerator {
 				SurvivalActionRule shortenedRuleWithEmptyAct = rule.reduceActionsThisSameAttribute();
 				int nbEmptyActionsWithEmptyAct = calculateNbEmptyActions(shortenedRuleWithEmptyAct);
 				
+				commonExamplesPercentage = rule.getCommonExamplesPercentage(this.exampleSet);
+				ruleCoveringPercentage = rule.getRuleCoveringPercentage(this.exampleSet);				
 				if (act.getRightValue().getClass() != AnyValueSet.class &&
 						nbEmptyActionsWithEmptyAct != shortenedRuleWithEmptyAct.getPremise().getSubconditions().size() && // check if we wouldn't remove the last not empty action
 						newLogRank >= currentLogRank &&
 						!stableAttributes.contains(act.getAttribute()) &&
-						isFulfilledTargetRulePosition(rule)) {
+						isFulfilledTargetRulePosition(rule) &&
+						ruleCoveringPercentage <= this.maxRuleCoveringPercentage &&
+						commonExamplesPercentage <= this.maxCommonExamplesPercentage) {
 					actionRemove = action;
 					currentLogRank = newLogRank;
 					loosenRightRule = true;
@@ -234,6 +263,17 @@ public class SurvivalActionRulesGenerator {
 		} while(bestConditionLeftRule != null);
 		return actionRule;
 	}
+	
+	private float getCommonExamplesPercentage(SurvivalRule leftRule, SurvivalRule rightRule)
+	{
+		Covering leftRuleCovering = leftRule.covers(this.exampleSet);
+		Set<Integer> intersection = new HashSet<Integer>(leftRuleCovering.positives);
+		Covering rightRuleCovering = rightRule.covers(this.exampleSet);
+		intersection.retainAll(rightRuleCovering.positives);
+		float commonExamplesPercentage = (float) intersection.size()/this.exampleSet.size();
+
+		return commonExamplesPercentage;
+	}
 
 	protected ConditionBase findCounterCondition(ElementaryCondition sourceCondition, SurvivalRule leftRule, SurvivalRule rightRule) {
 		ElementaryCondition bestCounterCondition = null;
@@ -261,6 +301,12 @@ public class SurvivalActionRulesGenerator {
 
 			Covering newRightRuleCovering = rightRule.covers(this.exampleSet);
 			if (newRightRuleCovering.positives.size() < this.minRuleCovered) {
+				rightRule.getPremise().removeSubcondition(condition);
+				continue;
+			}
+
+			float commonExamplesPercentage = this.getCommonExamplesPercentage(leftRule, rightRule);
+			if (commonExamplesPercentage > this.maxCommonExamplesPercentage) {
 				rightRule.getPremise().removeSubcondition(condition);
 				continue;
 			}
@@ -389,6 +435,11 @@ public class SurvivalActionRulesGenerator {
 
 			// Covering for entire set and KM estimator for covered by new rule examples
 			Covering coveringEntireSet = currentRule.covers(this.exampleSet);
+			float currentRuleCoveringPercentage = (float) currentRule.covers(this.exampleSet).positives.size()/this.exampleSet.size();
+			if (currentRuleCoveringPercentage > this.maxRuleCoveringPercentage) {
+				currentRule.getPremise().getSubconditions().remove(condition); // cleaning
+				continue;
+			}
 			KaplanMeierEstimator kmCoveredByRule = new KaplanMeierEstimator(this.exampleSet, coveringEntireSet.positives);
 
 			// KM for examples uncovered by new rule

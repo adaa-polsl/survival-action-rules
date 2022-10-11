@@ -21,6 +21,14 @@ public class RulesSetStatistics {
 	private int aggregatedNumberOfActionsTypeANY = 0;
 	private double meanNumberOfActionsPerRule = 0;
 
+	private double sumPercentOfExamplesCoveredByLeftAndRightRules = 0;
+	private double sumPercentOfExamplesCoveredByLeftRule = 0;
+	private double sumPercentOfExamplesCoveredByRightRule = 0;
+
+	private double meanPercentOfExamplesCoveredByLeftAndRightRules = 0;
+	private double meanPercentOfExamplesCoveredByLeftRule = 0;
+	private double meanPercentOfExamplesCoveredByRightRule = 0;
+
 	public RulesSetStatistics(List<SurvivalActionRule> rules, ExampleSet exampleSet) {
 		this.rules = rules;
 		this.exampleSet = exampleSet;
@@ -37,6 +45,9 @@ public class RulesSetStatistics {
 		this.aggregatedNumberOfActions = 0;
 		this.aggregatedNumberOfActionsTypeANY = 0;
 		this.meanNumberOfActionsPerRule = 0;
+		this.sumPercentOfExamplesCoveredByLeftAndRightRules = 0;
+		this.sumPercentOfExamplesCoveredByLeftRule = 0;
+		this.sumPercentOfExamplesCoveredByRightRule = 0;
 
 		for (RuleStatistic ruleStat: this.ruleStatistics) {
 			if (ruleStat.getNumberOfActions() == 0) {
@@ -45,9 +56,15 @@ public class RulesSetStatistics {
 			this.aggregatedNumberOfConditions += ruleStat.getNumberOfConditions();
 			this.aggregatedNumberOfActions += ruleStat.getNumberOfActions();
 			this.aggregatedNumberOfActionsTypeANY += ruleStat.getNumberOfActionTypeANY();
+			this.sumPercentOfExamplesCoveredByLeftAndRightRules += ruleStat.getPercentOfExamplesCoveredByLeftAndRightRules();
+			this.sumPercentOfExamplesCoveredByLeftRule += ruleStat.getPercentOfExamplesCoveredByLeftRule();
+			this.sumPercentOfExamplesCoveredByRightRule += ruleStat.getPercentOfExamplesCoveredByRightRule();
 		}
 		this.meanNumberConditionsPerRule = (double)this.aggregatedNumberOfConditions / (double)this.numberOfRules;
 		this.meanNumberOfActionsPerRule = (double)this.aggregatedNumberOfActions / (double)this.numberOfRules;
+		this.meanPercentOfExamplesCoveredByLeftAndRightRules = (double)this.sumPercentOfExamplesCoveredByLeftAndRightRules / this.numberOfRules;
+		this.meanPercentOfExamplesCoveredByLeftRule = (double)this.sumPercentOfExamplesCoveredByLeftRule / this.numberOfRules;
+		this.meanPercentOfExamplesCoveredByRightRule = (double)this.sumPercentOfExamplesCoveredByRightRule / this.numberOfRules;
 	}
 
 	private void generateStatisticEachRule() {

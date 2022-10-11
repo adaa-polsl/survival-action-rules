@@ -133,6 +133,31 @@ public class SurvivalActionRule extends ActionRule {
 		return logrankResult.getSecond();
 	}
 
+	public static float getCommonExamplesPercentage(SurvivalRule leftRule, SurvivalRule rightRule, ExampleSet exampleSet)
+	{
+		Covering leftRuleCovering = leftRule.covers(exampleSet);
+		Set<Integer> intersection = new HashSet<Integer>(leftRuleCovering.positives);
+		Covering rightRuleCovering = rightRule.covers(exampleSet);
+		intersection.retainAll(rightRuleCovering.positives);
+		float commonExamplesPercentage = (float) intersection.size()/exampleSet.size();
+
+		return commonExamplesPercentage;
+	}
+
+	public float getCommonExamplesPercentage(ExampleSet exampleSet)
+	{
+		float commonExamplesPercentage = SurvivalActionRule.getCommonExamplesPercentage(this.getLeftRule(), this.getRightRule(), exampleSet);
+
+		return commonExamplesPercentage;
+	}
+
+	public float getRuleCoveringPercentage(ExampleSet exampleSet)
+	{
+		float ruleCoveringPercentage = (float) this.covers(exampleSet).positives.size()/exampleSet.size();
+		
+		return ruleCoveringPercentage;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (!(obj instanceof SurvivalActionRule)) {

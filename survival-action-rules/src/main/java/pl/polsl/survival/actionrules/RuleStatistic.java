@@ -36,6 +36,7 @@ public class RuleStatistic {
 	private double medianSurvivalTimeLeftRule = 0;
 	private double medianSurvivalTimeRightRule = 0;
 	private double differenceMedianSurvivalTimeBetweenLeftRight = 0;
+	private double percentOfExamplesCoveredByLeftAndRightRules = 0;
 
 	private Set<Integer> coveredExLeft;
 	private Set<Integer> coveredExRight;
@@ -63,6 +64,7 @@ public class RuleStatistic {
 		KaplanMeierEstimator kmRight = new KaplanMeierEstimator(this.exampleSet, rightCovering.positives);
 		this.medianSurvivalTimeRightRule = kmRight.getTimeForProbability(MEDIAN_PROB);
 		this.differenceMedianSurvivalTimeBetweenLeftRight = this.medianSurvivalTimeLeftRule - this.medianSurvivalTimeRightRule;
+		this.percentOfExamplesCoveredByLeftAndRightRules = this.rule.getCommonExamplesPercentage(this.exampleSet);
 	}
 
 	/**
