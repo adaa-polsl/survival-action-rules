@@ -16,6 +16,12 @@ The description of application building will be described with the example of ID
 3. Then open the *Gradle Tasks* view and double-click on the `build` view. After this, the application should be built.
 4. You can start the application with the proper arguments. The main class of the application is `pl.polsl.survival.actionrules.ExperimentExecutor`. The argument is a path to an XML file, which contains the configuration of the experiment.
 
+The same results can be achieved using IntelliJ IDEA 2019.1.4.
+1. Import the `survival-action-rules` project as Gradle project.
+2. Build the application by selecting Build -> Build Project.
+3. Specify the path to the configuration file `./datasets/example-config.xml` by selecting Run -> Edit Configurations and filling in the Program arguments field.
+4. Start the application by selecting Run -> Run... -> ExperimentExecutor.
+
 ### Input data
 
 Input data, on the basis of which the action rules are generated, are given to the program in ARFF format.
@@ -46,6 +52,8 @@ The following information can be defined for a given parameter set:
     + *any* - the survival curve can have any position.
     + *better* - right rule should be the rule of improvement
     + *worse* - right rule should be worsened rule.
+* `max_common_examples_percentage` specifying the maximum percentage of examples common to both rules,
+* `max_rule_covering_percentage` specifying the maximum rule coverage.
 
 An example section of parameters in an XML file is presented below:
 
@@ -53,6 +61,8 @@ An example section of parameters in an XML file is presented below:
 <parameter_set name ="better-target-rule">
   <param name = "min_rule_covered">10</param>
   <param name = "target_survival_curve">better</param>
+  <param name = "max_common_examples_percentage">0.1</param>
+  <param name = "max_rule_covering_percentage">0.5</param>
 </parameter_set>
 ```
 The second part of the XML file contains information about the data sets:
@@ -80,6 +90,7 @@ The user can define the following information here:
 * `in_file` - path to the ARFF file with the dataset.
 
 You can find example XML config file in the `datasets` directory.
+
 ### Output data
 
 After the experiment, the results are saved in text files and CSV files. They are placed in a directory specified by the parameter `out_directory` in the configuration file. Subdirectories are created in this file, each for a different type of parameter configuration. The subdirectory names respond to the `parameter_set` tags in an XML file.
@@ -92,22 +103,25 @@ The results of the experiment are saved in 4 files:
 
 ## Data availability
 
-* actg320 (HIV-infected patients): [ftp://ftp.wiley.com/public/sci_tech_med/survival](ftp://ftp.wiley.com/public/sci_tech_med/survival)
-* BMT-Ch (bone marrow transplant): https://github.com/adaa-polsl/GuideR/blob/master/datasets/bmt/bone-marrow.arff
-* cancer (advanced lung cancer patients): survival R package
-* follic (follicular cell lymphoma patients): randomForestSRC R package
+Medical datasets:
+
 * GBSG2 (node-positive breast cancer patients): TH.data R package
-* hd (Hodgkin's disease patients): randomForestSRC R package
-* lung (early detection of lung cancer): [​https://www.stats.ox.ac.uk/pub/datasets/csb](https://www.stats.ox.ac.uk/pub/datasets/csb)
-* Melanoma (malignant melanoma patients after radical operation): riskRegression R package
-* mgus (patients with monoclonal gammopathy of undetermined significance): survival R package
-* pbc (primary biliary cirrhosis of the liver): survival R package
-* std (occurrence of sexually transmitted diseases): KMsurv R package
 * uis (drug abuse reduction): quantreg R package
 * wcgs (occurrence of coronary heart disease): epitools R package
-* whas1 (myocardial infarction patients, 1st book edition): [​ftp://ftp.wiley.com/public/sci_tech_med/survival](ftp://ftp.wiley.com/public/sci_tech_med/survival)
-* whas500 (myocardial infarction patients, 2nd book edition): [​ftp://ftp.wiley.com/public/sci_tech_med/survival](ftp://ftp.wiley.com/public/sci_tech_med/survival)
+* whas1 (myocardial infarction patients, 1st book edition): [ftp://ftp.wiley.com/public/sci_tech_med/survival](ftp://ftp.wiley.com/public/sci_tech_med/survival)
+* whas500 (myocardial infarction patients, 2nd book edition): [ftp://ftp.wiley.com/public/sci_tech_med/survival](ftp://ftp.wiley.com/public/sci_tech_med/survival)
 * zinc (esophageal cancer): NestedCohort R package
+
+Predictive maintenance datasets:
+
+* FD001 (Turbofan Engine Degradation): [https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData](https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData)
+* FD002 (Turbofan Engine Degradation): [https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData](https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData)
+* FD003 (Turbofan Engine Degradation): [https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData](https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData)
+* FD004 (Turbofan Engine Degradation): [https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData](https://github.com/hankroark/Turbofan-Engine-Degradation/tree/master/CMAPSSData)
+* maintenance: [https://github.com/square/pysurvival/blob/master/pysurvival/datasets/maintenance.csv](https://github.com/square/pysurvival/blob/master/pysurvival/datasets/maintenance.csv)
+* PUL (Predictive Useful Life): [https://www.kaggle.com/tiagotgoz/predictive-useful-life-based-into-telemetry](https://www.kaggle.com/tiagotgoz/predictive-useful-life-based-into-telemetry)
+
+The above datasets are available in the `datasets` directory.
 
 ## R package and report generation
 
