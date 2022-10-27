@@ -292,6 +292,10 @@ public class ExperimentExecutor {
 		writer.println("Mean percent of examples covered by left and right rules: " + statistic.getMeanPercentOfExamplesCoveredByLeftAndRightRules());
 		writer.println("Mean percent of examples covered by left rule: " + statistic.getMeanPercentOfExamplesCoveredByLeftRule());
 		writer.println("Mean percent of examples covered by right rule: " + statistic.getMeanPercentOfExamplesCoveredByRightRule());
+		writer.println("Percent of examples covered by left and right rules: " + statistic.getPercentOfExamplesCoveredByLeftAndRightRules());
+		writer.println("Percent of examples covered by left or right rules: " + statistic.getPercentOfExamplesCoveredByLeftOrRightRules());
+		writer.println("Percent of examples covered by left rule: " + statistic.getPercentOfExamplesCoveredByLeftRule());
+		writer.println("Percent of examples covered by right rule: " + statistic.getPercentOfExamplesCoveredByRightRule());
 		writer.println();
 		writer.println("Rules:");
 		// Write rules
