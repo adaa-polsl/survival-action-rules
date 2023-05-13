@@ -42,8 +42,8 @@ public class SurvivalActionRulesGenerator {
 	private Set<String> stableAttributes; // Which attributes shouldn't be changed
 
 	protected static final int DEFAULT_MIN_COVERED = 2;
-	protected static final float DEFAULT_MAX_COMMON_EXAMPLES_PER = 0.1f; // the max percentage of common examples that a left and right rule can maximally share, in particular 0 - none and 1 - all
-	protected static final float DEFAULT_MAX_RULE_COVERING_PERCENTAGE = 0.5f;
+	protected static final float DEFAULT_MAX_COMMON_EXAMPLES_PER = 1.0f; // the max percentage of common examples that a left and right rule can maximally share, in particular 0 - none and 1 - all
+	protected static final float DEFAULT_MAX_RULE_COVERING_PERCENTAGE = 1.0f;
 	protected static final Set<String> EMPTY_STABLE_ATTRIBUTES = Collections.emptySet();
 	protected static final TargetRulePosition DEFAULT_INDUCE_BETTER_SURVIVAL = TargetRulePosition.BETTER;
 
